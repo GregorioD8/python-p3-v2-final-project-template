@@ -6,7 +6,10 @@ from helpers import (
     exit_program,
     list_bands,
     create_band, 
-    find_band_by_name
+    find_band_by_name,
+    number_of_members,
+    list_band_members
+
 
 )
 
@@ -23,6 +26,10 @@ def main():
             create_band()
         elif choice == "3":
             find_band_by_name()
+        elif choice == "4":
+            number_of_members()
+        elif choice == "5":
+            list_band_members()
         else:
             print("Invalid choice")
 
@@ -33,7 +40,8 @@ def menu():
     print("1. List all bands playing at concert")
     print("2. Create band")
     print("3. Find band by name")
-    
+    print("4. Find number of band members for band")
+    print("5. List all band members in a band")
 
 
 if __name__ == "__main__":

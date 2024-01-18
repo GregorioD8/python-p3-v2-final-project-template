@@ -364,3 +364,7 @@ class Member:
     
 
 
+    def artists(self):
+            return [member for member in Member.all if member.band_id == self]
+            
+    

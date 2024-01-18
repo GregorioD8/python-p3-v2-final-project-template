@@ -115,10 +115,19 @@ def delete_member():
     else:
         print(f'Member {id_} not found')
 
+def number_of_members():
+    id_ = input("Enter the bands id: ")
+    band = Band.find_by_id(id_)
+    members = len(band.members())
+    if band:
+        return print(f'The number of artists in {band.name}: {members}')
+    else: 
+        print(f'cannot find band.')
+
 def list_band_members():
     id_ = input("Enter the bands id: ")
     if band := Band.find_by_id(id_):
         for member in band.members():
-            print(member)
+            print(member.name)
     else:
         print(f'Band {id_} not found')
