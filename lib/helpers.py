@@ -66,10 +66,10 @@ def delete_band():
     else:
         print(f'Band {id_} not found')
     
-def list_members():
+def list_all_artists():
     members = Member.get_all()
     for member in members:
-        print(member)
+        print(f'{member.id}: {member.name}')
 
 def find_member_by_name():
     name = input("Enter the members name: ")

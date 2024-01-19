@@ -363,8 +363,5 @@ class Member:
         return cls.instance_from_db(row) if row else None
     
 
-
-    def artists(self):
-            return [member for member in Member.all if member.band_id == self]
             
     
