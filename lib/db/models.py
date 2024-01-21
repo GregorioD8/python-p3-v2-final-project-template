@@ -183,6 +183,20 @@ class Band:
         return cls.instance_from_db(row) if row else None
 ##################################################
 
+    def cities(self):
+        """ Return list of cities associated woth current band. """
+       
+        sql = """ 
+            SELECT * FROM cities
+            WHERE band_id = ? 
+        """
+        CURSOR.execute(sql, (self.id,))
+
+        rows = CURSOR.fetchall()
+        return [
+            City.instance_from_db(row) for row in rows
+        ]   
+    
 
 class Member:
     all = {}
@@ -364,4 +378,100 @@ class Member:
     
 
             
+class City:
+    all = {}
+
+    def __init__(self, name, band_id, id=None):
+        self.id = id
+        self.name = name
+        self.band_id = band_id
+        
+    def __repr__(self):
+        return (
+            f"<City {self.id}: {self.name}, {self.band_id}, " +
+            f"Band ID: {self.band_id}>"
+        )
+
+    @property 
+    def name(self):
+        return self._name
     
+    @name.setter
+    def name(self, name):
+        if isinstance(name, str) and len(name):
+            self._name = name
+        else:
+            raise ValueError(
+                "Name must be a non-empty string"
+            )
+           
+    @property 
+    def band_id(self):
+        return self._band_id
+    
+    @band_id.setter
+    def band_id(self, band_id):
+        if type(band_id) is int and Band.find_by_id(band_id):
+            self._band_id = band_id
+        else:
+            raise ValueError(
+                "band_id must reference a band in the database."
+            )
+        
+    @classmethod
+    def create_table(cls):
+        """ Create a new table to persist the attributes of City instances """
+        sql = """
+            CREATE TABLE IF NOT EXISTS cities (
+            id INTEGER PRIMARY KEY, 
+            name TEXT,  
+            band_id INTEGER, 
+            FOREIGN KEY (band_id) REFERENCES bands(id))     
+        """
+        CURSOR.execute(sql)
+        CONN.commit()
+
+    @classmethod
+    def drop_table(cls):
+        """ Drop the table that persists City instances """
+        sql = """
+            DROP TABLE IF EXISTS cities;
+        """
+        CURSOR.execute(sql)
+        CONN.commit()
+
+    def save(self):
+        """ Instert a new row with the name, and the band id values of the current City object. 
+        Update the object id attribute useing the primary key value of new row.
+        Save the object in local dictionary using table row's PK as a dictionary key"""
+        sql = """
+            INSERT INTO cities (name, band_id)
+            VALUES (?, ?)
+        """
+        CURSOR.execute(sql, (self.name, self.band_id))
+        CONN.commit()
+
+        self.id = CURSOR.lastrowid
+        type(self).all[self.id] = self
+
+    @classmethod
+    def create(cls, name, band_id):
+        """ Initialize a new City instance and save the object to the database """
+        city = cls(name, band_id)
+        city.save()
+        return city
+
+
+    @classmethod
+    def instance_from_db(cls, row):
+        """ Return a Band object having to attribute values from the table row. """
+        #use primary key to check from instance
+        city = cls.all.get(row[0])
+        if city:
+            city.name = row[1]
+            city.band_id = row[2]
+        else:
+            city = cls(row[1], row[2])
+            city.id = row[0]
+            cls.all[city.id] = city
+        return city

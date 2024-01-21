@@ -9,7 +9,9 @@ from helpers import (
     find_band_by_name,
     number_of_members,
     list_band_members,
-    list_all_artists
+    list_all_artists,
+    list_performances,
+    create_performance,
 
 
 )
@@ -33,6 +35,10 @@ def main():
             list_band_members()
         elif choice == "6":
             list_all_artists()
+        elif choice == "7":
+            list_performances()
+        elif choice == "8":
+            create_performance()  
         else:
             print("Invalid choice")
 
@@ -46,7 +52,8 @@ def menu():
     print("4. Find number of band members for band")
     print("5. List all band members in a band")
     print("6. List all band members playing at the concert")
-
-
+    print("7. List all cities band is performing")
+    print("8. create performance")
+    
 if __name__ == "__main__":
     main()

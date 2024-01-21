@@ -131,3 +131,30 @@ def list_band_members():
             print(member.name)
     else:
         print(f'Band {id_} not found')
+
+def create_performance():
+    city = input("Enter city name: ")
+    id = input("Enter band id: ")
+    band = Band.find_by_id(id)
+    if not band:
+        try:
+            print("band not found...")
+            name = input("Enter new band name: ")
+            time = input("Enter playing time: ")
+            band = Band.create(name, int(time))
+            print(f'Success: {band}')
+        except Exception as exc:
+            print("error createing Band", exc)
+    
+    else: 
+        print(f'{band} performing in {city}')
+
+###################
+def list_performances():
+    id_ = input("Enter the bands id: ")
+    if band := Band.find_by_id(id_):
+        print(f'{band} performing in: ')
+        for city in band.cities():
+            print(city.name)
+    else:
+        print(f'Band {id_} not found')
