@@ -1,6 +1,7 @@
 # lib/helpers.py
 from db.models import Band
 from db.models import Member
+from db.models import City
 
 
 def exit_program():
@@ -144,9 +145,10 @@ def create_performance():
             band = Band.create(name, int(time))
             print(f'Success: {band}')
         except Exception as exc:
-            print("error createing Band", exc)
+            print("error creating Band", exc)
     
     else: 
+        City.create(city, int(id))
         print(f'{band} performing in {city}')
 
 ###################

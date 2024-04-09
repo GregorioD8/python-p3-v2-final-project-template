@@ -55,7 +55,6 @@ def seed_database():
     City.create("NYC", aerosmith.id)
     City.create("PHX", aerosmith.id)
 
-
     City.create("PHX", led.id)    
     City.create("SLC", led.id)
     City.create("LA", led.id)
