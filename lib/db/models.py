@@ -5,55 +5,40 @@ class Band:
 
     all = {}
 
-    def __init__(self, name, time, id=None):
+    def __init__(self, name, id=None):
         self.id = id
         self.name = name
-        self.time = time
 
     def __repr__(self):
-        return f"<Band {self.id} {self.name}, {self.time}>"
-    
+        return f"<Band {self.id} {self.name}>"
+
     @property
     def name(self):
         return self._name
-    
+
     @name.setter
     def name(self, name):
         if isinstance(name, str) and len(name):
             self._name = name
         else:
             raise ValueError(
-                "Name must be a non-emptry string"
+                "Name must be a non-empty string"
             )
-        
-    @property
-    def time(self):
-        return self._time
-    
-    @time.setter
-    def time(self, time):
-        if isinstance(time, int) and 6 <= time <= 10:
-            self._time = time
-        else: 
-            raise ValueError(
-                "Time must be a non-empty number between 7 and 10"
-            )
-    
+
     @classmethod
     def create_table(cls):
         """ Create a new table to persist the attributes of Band instances """
         sql = """
             CREATE TABLE IF NOT EXISTS bands (
             id INTEGER PRIMARY KEY, 
-            name TEXT, 
-            time INTEGER)        
+            name TEXT)        
         """
         CURSOR.execute(sql)
         CONN.commit()
 
     @classmethod
     def drop_table(cls):
-        """ Drop the tale that persists Band instances """
+        """ Drop the table that persists Band instances """
         sql = """
             DROP TABLE IF EXISTS bands;
         """
@@ -61,24 +46,23 @@ class Band:
         CONN.commit()
 
     def save(self):
-        """ Insert a new row with the name and time values of the current Band instance.
+        """ Insert a new row with the name value of the current Band instance.
         Update object id attribute using the primary key value of new row.
         Save the object in local dictionary using table row's PK as dictionary key"""
         sql = """
-            INSERT INTO bands (name, time)
-            VALUES (?, ?)
+            INSERT INTO bands (name)
+            VALUES (?)        
         """
-
-        CURSOR.execute(sql, (self.name, self.time))
+        CURSOR.execute(sql, (self.name,))
         CONN.commit()
 
         self.id = CURSOR.lastrowid
         type(self).all[self.id] = self
 
     @classmethod
-    def create(cls, name, time):
+    def create(cls, name):
         """ Initialize a new Band instance and save the object to the database """
-        band = cls(name, time)
+        band = cls(name)
         band.save()
         return band
 
@@ -86,43 +70,41 @@ class Band:
         """ Update the table row corresponding to the current Band instance """
         sql = """
             UPDATE bands
-            SET name = ?, time = ?
+            SET name = ?
             WHERE id = ?         
         """
-        CURSOR.execute(sql, (self.name, self.time, self.id))
+        CURSOR.execute(sql, (self.name, self.id))
         CONN.commit()
-    
+
     def delete(self):
-        """ Delete teh table corresponding to the current Band instance,
+        """ Delete the table corresponding to the current Band instance,
         delete the dictionary entry, and reassign id attribute
         """
         sql = """
             DELETE FROM bands
             WHERE id = ?
         """
-
         CURSOR.execute(sql, (self.id,))
         CONN.commit()
 
         del type(self).all[self.id]
-        
+
         self.id = None
 
     @classmethod
     def instance_from_db(cls, row):
         """ Return a Band object having to attribute values from the table row. """
-        #use primary key to check from instance
+        # Use primary key to check from instance
         band = cls.all.get(row[0])
         if band:
             band.name = row[1]
-            band.time = row[2]
         else:
-            band = cls(row[1], row[2])
+            band = cls(row[1])
             band.id = row[0]
             cls.all[band.id] = band
         return band
-    
-    @classmethod 
+
+    @classmethod
     def get_all(cls):
         """ Return a list containing a Band object per row in the table. """
         sql = """
@@ -131,7 +113,7 @@ class Band:
         """
         rows = CURSOR.execute(sql).fetchall()
         return [cls.instance_from_db(row) for row in rows]
-    
+
     @classmethod
     def find_by_id(cls, id):
         """ Return a Band object corresponding to the table row matching the specified primary key"""
@@ -140,10 +122,9 @@ class Band:
             FROM bands
             WHERE id = ?   
         """
-
         row = CURSOR.execute(sql, (id,)).fetchone()
         return cls.instance_from_db(row) if row else None
-    
+
     @classmethod
     def find_by_name(cls, name):
         """ Return a Band object corresponding to first table row matching specified name. """
@@ -152,51 +133,20 @@ class Band:
             FROM bands
             WHERE name is ? 
         """
-
-        row = CURSOR.execute(sql, (name, )).fetchone()
+        row = CURSOR.execute(sql, (name,)).fetchone()
         return cls.instance_from_db(row) if row else None
-    
+
     def members(self):
-        """ Return list of members associated woth current band. """
-       
+        """ Return list of members associated with current band. """
         sql = """ 
             SELECT * FROM members
             WHERE band_id = ? 
         """
         CURSOR.execute(sql, (self.id,))
-
         rows = CURSOR.fetchall()
-        return [
-            Member.instance_from_db(row) for row in rows
-        ]
-####################################
-    @classmethod
-    def find_by_time(cls, time):
-        """ Return a Band object corresponding to the table row matching the specified primary key"""
-        sql = """
-            SELECT *
-            FROM bands
-            WHERE time= ?   
-        """
+        return [Member.instance_from_db(row) for row in rows]
 
-        row = CURSOR.execute(sql, (time,)).fetchone()
-        return cls.instance_from_db(row) if row else None
-##################################################
 
-    def cities(self):
-        """ Return list of cities associated woth current band. """
-       
-        sql = """ 
-            SELECT * FROM cities
-            WHERE band_id = ? 
-        """
-        CURSOR.execute(sql, (self.id,))
-
-        rows = CURSOR.fetchall()
-        return [
-            City.instance_from_db(row) for row in rows
-        ]   
-    
 
 class Member:
     all = {}
@@ -205,7 +155,7 @@ class Member:
         self.id = id
         self.name = name
         self.instrument = instrument
-        self.band_id = band_id
+        self._band_id = band_id
         
     def __repr__(self):
         return (
@@ -318,10 +268,17 @@ class Member:
     @classmethod
     def create(cls, name, instrument, band_id):
         """ Initialize a new Member instance and save the object to the database. """
-        member = cls(name, instrument, band_id)
-        member.save()
-        return member
-    
+        if not Band.find_by_id(band_id):
+            raise ValueError("band_id does not reference a band in the database")
+        try:
+     #       band_id = int(band_id)
+            member = cls(name, instrument, band_id)
+            member.save()
+            return member
+        except ValueError as e:
+            print(f"error creating member: {e}")
+            return None    
+        
     @classmethod
     def instance_from_db(cls, row):
         """ Return a Member object haviong the attribute values from the table row. """
@@ -378,100 +335,3 @@ class Member:
     
 
             
-class City:
-    all = {}
-
-    def __init__(self, name, band_id, id=None):
-        self.id = id
-        self.name = name
-        self.band_id = band_id
-        
-    def __repr__(self):
-        return (
-            f"<City {self.id}: {self.name}, {self.band_id}, " +
-            f"Band ID: {self.band_id}>"
-        )
-
-    @property 
-    def name(self):
-        return self._name
-    
-    @name.setter
-    def name(self, name):
-        if isinstance(name, str) and len(name):
-            self._name = name
-        else:
-            raise ValueError(
-                "Name must be a non-empty string"
-            )
-           
-    @property 
-    def band_id(self):
-        return self._band_id
-    
-    @band_id.setter
-    def band_id(self, band_id):
-        if type(band_id) is int and Band.find_by_id(band_id):
-            self._band_id = band_id
-        else:
-            raise ValueError(
-                "band_id must reference a band in the database."
-            )
-        
-    @classmethod
-    def create_table(cls):
-        """ Create a new table to persist the attributes of City instances """
-        sql = """
-            CREATE TABLE IF NOT EXISTS cities (
-            id INTEGER PRIMARY KEY, 
-            name TEXT,  
-            band_id INTEGER, 
-            FOREIGN KEY (band_id) REFERENCES bands(id))     
-        """
-        CURSOR.execute(sql)
-        CONN.commit()
-
-    @classmethod
-    def drop_table(cls):
-        """ Drop the table that persists City instances """
-        sql = """
-            DROP TABLE IF EXISTS cities;
-        """
-        CURSOR.execute(sql)
-        CONN.commit()
-
-    def save(self):
-        """ Instert a new row with the name, and the band id values of the current City object. 
-        Update the object id attribute useing the primary key value of new row.
-        Save the object in local dictionary using table row's PK as a dictionary key"""
-        sql = """
-            INSERT INTO cities (name, band_id)
-            VALUES (?, ?)
-        """
-        CURSOR.execute(sql, (self.name, self.band_id))
-        CONN.commit()
-
-        self.id = CURSOR.lastrowid
-        type(self).all[self.id] = self
-
-    @classmethod
-    def create(cls, name, band_id):
-        """ Initialize a new City instance and save the object to the database """
-        city = cls(name, band_id)
-        city.save()
-        return city
-
-
-    @classmethod
-    def instance_from_db(cls, row):
-        """ Return a Band object having to attribute values from the table row. """
-        #use primary key to check from instance
-        city = cls.all.get(row[0])
-        if city:
-            city.name = row[1]
-            city.band_id = row[2]
-        else:
-            city = cls(row[1], row[2])
-            city.id = row[0]
-            cls.all[city.id] = city
-        return city

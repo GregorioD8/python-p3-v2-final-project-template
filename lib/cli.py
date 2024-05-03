@@ -3,57 +3,85 @@
 from helpers import (
 
 #see instructions 
-    exit_program,
+    exit_to_main,
     list_bands,
     create_band, 
     find_band_by_name,
-    number_of_members,
+    delete_band,
     list_band_members,
-    list_all_artists,
-    list_performances,
-    create_performance,
-
-
+    create_member,
+    delete_member
 )
 
 
-def main():
+def main_menu():
     while True:
-        menu()
+        print("\nMain Menu:")
+        print("1. Band Menu")
+        print("2. Member Menu")
+        print("0. Exit the program")
+
         choice = input("> ")
+
         if choice == "0":
-            exit_program()
+            break
+        elif choice == "1":
+            band_menu()
+        elif choice == "2":
+            member_menu()
+        else:
+            print("Invalid choice")
+
+def band_menu():
+    while True:
+
+        print("\nBand Menu:")
+        print("1. List all bands")
+        print("2. Create band")
+        print("3. Delete band")
+        print("4. Find band by name")
+        print("5. List all band members")
+        print("0. Back to main menu")
+
+        choice = input("> ")
+
+        if choice == "0":
+            break
         elif choice == "1":
             list_bands()
         elif choice == "2":
             create_band()
         elif choice == "3":
-            find_band_by_name()
+            delete_band()
         elif choice == "4":
-            number_of_members()
+            find_band_by_name()
         elif choice == "5":
             list_band_members()
-        elif choice == "6":
-            list_all_artists()
-        elif choice == "7":
-            list_performances()
-        elif choice == "8":
-            create_performance()  
+        else:
+            print("Invalid choice")
+
+def member_menu():
+    while True:
+        print("\nMember Menu:")
+        print("1. List all members")
+        print("2. Create member")
+        print("3. Delete member")
+        print("0. Back to main menu")
+
+        choice = input("> ")
+
+        if choice == "0":
+            break
+        elif choice == "1":
+            list_band_members()
+        elif choice == "2":
+            create_member()
+        elif choice == "3":
+            delete_member()
         else:
             print("Invalid choice")
 
 
-def menu():
-    print("Please select an option:")
-    print("0. Exit the program")
-    print("1. List all bands playing at concert")
-    print("2. Create band")
-    print("3. Find band by name")
-    print("4. Find number of band members for band")
-    print("5. List all band members in a band")
-    print("6. List all band members playing at the concert")
-    print("7. List all cities band is performing")
-    print("8. create performance")
-    
+
 if __name__ == "__main__":
-    main()
+    main_menu()

@@ -1,162 +1,151 @@
-# lib/helpers.py
-from db.models import Band
-from db.models import Member
-from db.models import City
+import pdb
+from db.models import Band, Member
 
 
-def exit_program():
-    print("Goodbye!")
+def exit_to_main():
+    print("Exiting to main menu")
     exit()
 
-def list_bands():
-    bands = Band.get_all()
-    for band in bands:
-        print(band)
 
 def find_band_by_name():
-    name = input("Enter the bands name: ")
+    name = input("Enter the band's name: ")
     band = Band.find_by_name(name)
-    print(band) if band else print(f'Band {band} not found in database.')
+    print(band) if band else print(f'Band "{name}" not found in the database.')
+
 
 def find_band_by_id():
-    id_ = input("Enter the bands id: ")
+    id_ = input("Enter the band's ID: ")
     band = Band.find_by_id(id_)
-    print(band) if band else print(f'Band {id_} not found')
-#########################
-def find_band_by_time():
-    time = input("Enter the band playing time: ")
-    band = Band.find_by_time(time)
-    print(band) if band else print(f'Band time slot empty')
-##########################
+    print(band) if band else print(f'Band with ID "{id_}" not found')
+
+
 def create_band():
     name = input("Enter band name: ")
-    time = input("Enter playing time: ")
-    band = Band.find_by_time(time)
+  
+    band = Band.find_by_name(name)
     if not band:
         try:
-            band = Band.create(name, int(time))
+            band = Band.create(name)
             print(f'Success: {band}')
         except Exception as exc:
-            print("error createing Band", exc)
-    
+            print("Error creating Band:", exc)
     else: 
-        print(f'Time slot taken by {band}')
-###########################
-def update_band():
-    id_ = input("Enter the bands id: ")
-    if band := Band.find_by_id(id_):
-        try:
-            name = input("Enter the bands new name: ")
-            band.name = name
-            time = input("Enter the bands new time: ")
-            band.time = int(time)
-
-            band.update()
-            print(f'Success: {band}')
-        except Exception as exc:
-            print("Error updating band: ", exc)
-    else:
-        print(f'Band {id_} not found')
+        print(f'Band name taken by {band}')
 
 
 def delete_band():
-    id_ = input("Enter the bands id: ")
-    if band := Band.find_by_id(id_):
-        band.delete()
-        print(f'Band {id_} deleted')
-    else:
-        print(f'Band {id_} not found')
+    print("Which band would you like to delete?")
+    list_bands()
+
+    selection = input("Enter the number of the band you want to delete: ")
     
-def list_all_artists():
-    members = Member.get_all()
-    for member in members:
-        print(f'{member.id}: {member.name}')
-
-def find_member_by_name():
-    name = input("Enter the members name: ")
-    member = Member.find_by_name(name)
-    print(member) if member else print(f'Member {member} not found')
-
-def find_member_by_id():
-    id = input("Enter the members id: ")
-    member = Member.find_by_id(id)
-    print(member) if member else print(f'Member {member} not found')
-
-def create_member():
-    name = input("Enter the members name: ")
-    instrument = input("Enter the members instrument: ")
-    band = input("Enter the members band id: ")
-    try:
-        member = Member.create(name, instrument, band)
-    except Exception as exc:
-        print("Error creating member: ", exc)
-
-def update_member():
-    id_ = input("Enter the members name: ")
-    if member := Member.find_by_id(id_):
-        try: 
-            name = input("Enter the members new name: ")
-            member.name = name
-            instrument = input("Enter the members new instrument: ")
-            member.instrument = instrument
-            band_id = input("Enter the members new band id: ")
-            member.band_id = int(band_id)
-            member.update()
-            print(f'Success: {member}')
-        except Exception as exc:
-            print("Error updating memeber: ", exc)
+    index = int(selection)
+    print(index)
+    bands = Band.get_all()
+    #check if selection falls in the range of existing indexes
+    if 1 <= index <= len(bands):
+       
+        selected_band = bands[index - 1]
+        
+        print(f"{selected_band.name} Deleted.")
+        selected_band.delete()
     else:
-        print(f'Employee {id_} not found')
+        print("invalid selection: please try again.")
+
+#########################################################
+def list_bands():
+    bands = Band.get_all()
+    print("\n################################")
+    for i, band in enumerate(bands, start=1):
+        print(f"{i}. {band.name}")
+    print("################################\n")
+    
+def list_band_members():
+
+    print("Which band is the member a part of?")
+    list_bands()
+
+    selection = input("Enter the number of the band you want list all members of: ")
+    index = int(selection)
+    print(index)
+    bands = Band.get_all()
+
+    print("\n********************************")
+    print(f"{bands[index - 1]}")
+  
+    if 1 <= index <= len(bands):
+       
+        selected_band = bands[index - 1]
+        
+        print(f"{selected_band.name} Selected.")
+        members = selected_band.members()
+        print("\n********************************")
+        number = 1
+        for member in members:
+            
+            print(f"{number}. {member.name}")
+            number += 1
+        print("********************************\n")
+    else:
+        print("invalid selection: please try again.")
+    
+def create_member():
+    name = input("Enter the member's name: ")
+    instrument = input("Enter the member's instrument: ")
+    
+    list_bands()
+
+    band_selection = input(f"Add {name} to which band? \nEnter the band number: ")
+    index = int(band_selection)
+
+    bands = Band.get_all()
+    band = bands[index - 1]
+
+   
+    try:
+        member = Member.create(name, instrument, band.id)
+        print("\n****************************************************")
+        print(f'Success: {member.name} added to the band {band.name}')
+        print("******************************************************")
+    except Exception as exc:
+        print("Error creating member:", exc)
 
 def delete_member():
-    id_ = input("Enter the members id: ") 
-    if member := Member.find_by_id(id_):
-        member.delete()
-        print(f'Member {id_} deleted')
+
+    list_bands()
+
+    band_selection = input("Delete member of what band \nEnter the band number: ")
+    index = int(band_selection)
+
+    bands = Band.get_all()
+    members = bands[index - 1].members()
+
+    i = 1
+    print("\n********************************")
+    print(f"{bands[index - 1].name}")
+    print("********************************")
+    for member in members:
+        
+        print(f"{i}. {member.name}" )
+        i +=1
+    print("********************************\n")
+          
+    member_index = int(input("Which member would you like to delete? "))
+    soloist = members[member_index-1]
+    print("\n--------------------------------------------------------------------------")
+    print(f"ARE YOU SURE YOU WANT TO DELETE {soloist.name} FROM {bands[index - 1].name}? ")
+    print("----------------------------------------------------------------------------")
+    permission = input("\nEnter y to delete and n to cancel: ")
+    granted = "y"
+    if permission.casefold() == granted.casefold():
+        soloist.delete()
+        print("\n---------------------------------------")
+        print(f"{soloist.name} DELETED FROM {bands[index - 1].name}")
+        print("-----------------------------------------")
     else:
-        print(f'Member {id_} not found')
+        print("\n------------------")
+        print(f"Deletion cancelled")
+        print("--------------------")
 
-def number_of_members():
-    id_ = input("Enter the bands id: ")
-    band = Band.find_by_id(id_)
-    members = len(band.members())
-    if band:
-        return print(f'The number of artists in {band.name}: {members}')
-    else: 
-        print(f'cannot find band.')
 
-def list_band_members():
-    id_ = input("Enter the bands id: ")
-    if band := Band.find_by_id(id_):
-        for member in band.members():
-            print(member.name)
-    else:
-        print(f'Band {id_} not found')
-
-def create_performance():
-    city = input("Enter city name: ")
-    id = input("Enter band id: ")
-    band = Band.find_by_id(id)
-    if not band:
-        try:
-            print("band not found...")
-            name = input("Enter new band name: ")
-            time = input("Enter playing time: ")
-            band = Band.create(name, int(time))
-            print(f'Success: {band}')
-        except Exception as exc:
-            print("error creating Band", exc)
-    
-    else: 
-        City.create(city, int(id))
-        print(f'{band} performing in {city}')
-
-###################
-def list_performances():
-    id_ = input("Enter the bands id: ")
-    if band := Band.find_by_id(id_):
-        print(f'{band} performing in: ')
-        for city in band.cities():
-            print(city.name)
-    else:
-        print(f'Band {id_} not found')
+    #pdb.set_trace()
