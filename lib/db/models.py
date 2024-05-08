@@ -326,12 +326,27 @@ class Member:
         """Return Member object corresponding to the first table row matching specified name"""
         sql = """
             SELECT *
-            FROM employees
+            FROM members
             WHERE name is ?
         """
 
         row = CURSOR.execute(sql, (name,)).fetchone()
         return cls.instance_from_db(row) if row else None
     
-
-            
+    @classmethod
+    def find_by_instrument(cls, instrument):
+        """Return the list of Member objects corresponding to the specified instrument."""
+        sql = """
+            SELECT *
+            FROM members
+            WHERE instrument = ?
+        """
+        rows = CURSOR.execute(sql, (instrument,)).fetchall()
+        return [cls.instance_from_db(row) for row in rows]
+    
+    
+#talking through code 
+#find out where the data is stored 
+#how does the ORM work with python
+#
+#python

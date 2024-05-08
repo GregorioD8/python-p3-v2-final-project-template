@@ -2,15 +2,15 @@
 
 from helpers import (
 
-#see instructions 
-    exit_to_main,
     list_bands,
     create_band, 
     find_band_by_name,
     delete_band,
     list_band_members,
     create_member,
-    delete_member
+    delete_member,
+    find_member_by_name,
+    find_member_by_instrument
 )
 
 
@@ -61,11 +61,14 @@ def band_menu():
             print("Invalid choice")
 
 def member_menu():
+    #add find by name
     while True:
         print("\nMember Menu:")
         print("1. List all members")
         print("2. Create member")
         print("3. Delete member")
+        print("4. Find member by name")
+        print("5. Find member by instrument")
         print("0. Back to main menu")
 
         choice = input("> ")
@@ -78,6 +81,11 @@ def member_menu():
             create_member()
         elif choice == "3":
             delete_member()
+        elif choice == "4":
+            ########### working on this method
+            find_member_by_name(),
+        elif choice == "5":
+            find_member_by_instrument(),
         else:
             print("Invalid choice")
 
@@ -85,3 +93,21 @@ def member_menu():
 
 if __name__ == "__main__":
     main_menu()
+
+
+#member by name 
+#case insensitive
+#if another member has the same name show all 
+#first or last name #python docs .includes?
+
+#comfort level
+#problem solving process
+
+
+#find by name 
+
+#add to cli
+#add to helpers
+
+#how to "change" in sql
+

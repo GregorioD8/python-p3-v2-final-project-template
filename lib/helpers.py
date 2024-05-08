@@ -37,7 +37,7 @@ def delete_band():
     print("Which band would you like to delete?")
     list_bands()
 
-    selection = input("Enter the number of the band you want to delete: ")
+    selection = input("Which band would you like to delete? \nEnter the members number: ")
     
     index = int(selection)
     print(index)
@@ -130,7 +130,7 @@ def delete_member():
         i +=1
     print("********************************\n")
           
-    member_index = int(input("Which member would you like to delete? "))
+    member_index = int(input("Which member would you like to delete? \nEnter the members number: "))
     soloist = members[member_index-1]
     print("\n--------------------------------------------------------------------------")
     print(f"ARE YOU SURE YOU WANT TO DELETE {soloist.name} FROM {bands[index - 1].name}? ")
@@ -147,5 +147,37 @@ def delete_member():
         print(f"Deletion cancelled")
         print("--------------------")
 
+def find_member_by_name():
+    name = input("enter the first or last name of the member. ")
+    print(name)
+    print(f"\n{name} entered")
+    
+    #find in Member.all name to lowercase
+    all_members = Member.get_all()
 
-    #pdb.set_trace()
+    #member dict    
+    md = [member.name for member in all_members if name.lower() in member.name.lower()]
+
+    print("\n********************************")
+    [print(f"{i}. {member}")for i, member in enumerate(md, start=1)]   
+    print("********************************\n")
+
+def find_member_by_instrument():
+    gear = [member.instrument for member in Member.get_all()]
+    gear_list = []
+    [gear_list.append(instrument) for instrument in gear if instrument not in gear_list]
+    
+ 
+    [print(f"{i}. {instrument}") for i, instrument in enumerate(gear_list, start = 1)]
+
+    selection = input("Enter the instruments number: ")
+
+    inst = gear_list[int(selection) - 1]
+    
+    print("\n*****************************")
+    print(f"Instrument: {inst}")
+    print("*****************************")
+    [print(f"{member.name}") for member in Member.find_by_instrument(inst)]
+    print("*****************************\n")
+
+    pdb.set_trace()
