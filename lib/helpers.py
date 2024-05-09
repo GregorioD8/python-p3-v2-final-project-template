@@ -21,18 +21,8 @@ def find_band_by_id():
 
 def create_band():
     name = input("Enter band name: ")
-
-    # band = Band.find_by_name(name)
     Band.create(name) and print(f"{name} created") if not Band.find_by_name(name) else print(f"Band name {name} taken")
-    # pdb.set_trace()
-    # if not band:
-    #     try:
-    #         band = Band.create(name)
-    #         print(f'Success: {band}')
-    #     except Exception as exc:
-    #         print("Error creating Band:", exc)
-    # else: 
-    #     print(f'Band name taken by {band}')
+
     
 
 def delete_band():
@@ -56,40 +46,24 @@ def delete_band():
 
 #########################################################
 def list_bands():
-    bands = Band.get_all()
     print("\n################################")
-    for i, band in enumerate(bands, start=1):
-        print(f"{i}. {band.name}")
+    print("All Bands")
+    print("################################")
+    [print(f"{i}. {band.name}") for i, band in enumerate(Band.get_all(), start = 1)]
     print("################################\n")
     
 def list_band_members():
-
-    print("Which band is the member a part of?")
+    print(f"\nWhat band would you like to see the members of?")
     list_bands()
+    selection = input("Select a band number: ")
+    band = Band.get_all()[int(selection) - 1]
 
-    selection = input("Enter the number of the band you want list all members of: ")
-    index = int(selection)
-    print(index)
-    bands = Band.get_all()
+    print("\n******************************************")
+    print(f"Members of {band.name}")
+    print("******************************************")
+    [print(f"{i}. {member.name}") for i, member in enumerate(band.members(), start = 1)]
+    print("*****************************************\n")
 
-    print("\n********************************")
-    print(f"{bands[index - 1]}")
-  
-    if 1 <= index <= len(bands):
-       
-        selected_band = bands[index - 1]
-        
-        print(f"{selected_band.name} Selected.")
-        members = selected_band.members()
-        print("\n********************************")
-        number = 1
-        for member in members:
-            
-            print(f"{number}. {member.name}")
-            number += 1
-        print("********************************\n")
-    else:
-        print("invalid selection: please try again.")
     
 def create_member():
     name = input("Enter the member's name: ")
