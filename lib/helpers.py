@@ -10,28 +10,30 @@ def exit_to_main():
 def find_band_by_name():
     name = input("Enter the band's name: ")
     band = Band.find_by_name(name)
-    print(band) if band else print(f'Band "{name}" not found in the database.')
-
+    return print(band) if band else print(f'Band "{name}" not found in the database.')
+  
 
 def find_band_by_id():
     id_ = input("Enter the band's ID: ")
     band = Band.find_by_id(id_)
-    print(band) if band else print(f'Band with ID "{id_}" not found')
+    return print(band) if band else print(f'Band with ID "{id_}" not found')
 
 
 def create_band():
     name = input("Enter band name: ")
-  
-    band = Band.find_by_name(name)
-    if not band:
-        try:
-            band = Band.create(name)
-            print(f'Success: {band}')
-        except Exception as exc:
-            print("Error creating Band:", exc)
-    else: 
-        print(f'Band name taken by {band}')
 
+    # band = Band.find_by_name(name)
+    Band.create(name) and print(f"{name} created") if not Band.find_by_name(name) else print(f"Band name {name} taken")
+    # pdb.set_trace()
+    # if not band:
+    #     try:
+    #         band = Band.create(name)
+    #         print(f'Success: {band}')
+    #     except Exception as exc:
+    #         print("Error creating Band:", exc)
+    # else: 
+    #     print(f'Band name taken by {band}')
+    
 
 def delete_band():
     print("Which band would you like to delete?")
@@ -118,20 +120,23 @@ def delete_member():
     index = int(band_selection)
 
     bands = Band.get_all()
-    members = bands[index - 1].members()
+    band = bands[index - 1].members()
 
-    i = 1
+    [print(f"{i}. {member.name}") for i, member in enumerate(band, start= 1)]
+    
+    # i = 1
     print("\n********************************")
-    print(f"{bands[index - 1].name}")
+    print(f"{member.name}" for member in band)
     print("********************************")
-    for member in members:
+    pdb.set_trace()
+    # for member in band:
         
-        print(f"{i}. {member.name}" )
-        i +=1
-    print("********************************\n")
+    #     print(f"{i}. {member.name}" )
+    #     i +=1
+    # print("********************************\n")
           
     member_index = int(input("Which member would you like to delete? \nEnter the members number: "))
-    soloist = members[member_index-1]
+    soloist = band[member_index-1]
     print("\n--------------------------------------------------------------------------")
     print(f"ARE YOU SURE YOU WANT TO DELETE {soloist.name} FROM {bands[index - 1].name}? ")
     print("----------------------------------------------------------------------------")
@@ -149,16 +154,16 @@ def delete_member():
 
 def find_member_by_name():
     name = input("enter the first or last name of the member. ")
-    print(name)
-    print(f"\n{name} entered")
     
-    #find in Member.all name to lowercase
+    
+    #find in Member.all
     all_members = Member.get_all()
 
-    #member dict    
+    #member dict includes names that match the provided name
     md = [member.name for member in all_members if name.lower() in member.name.lower()]
-
     print("\n********************************")
+    print(f"Names that include: {name}")
+    print("********************************")
     [print(f"{i}. {member}")for i, member in enumerate(md, start=1)]   
     print("********************************\n")
 
