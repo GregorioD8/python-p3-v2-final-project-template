@@ -1,50 +1,34 @@
 import pdb
 from db.models import Band, Member
 
-
 def exit_to_main():
     print("Exiting to main menu")
     exit()
-
 
 def find_band_by_name():
     name = input("Enter the band's name: ")
     band = Band.find_by_name(name)
     return print(band) if band else print(f'Band "{name}" not found in the database.')
   
-
 def find_band_by_id():
     id_ = input("Enter the band's ID: ")
     band = Band.find_by_id(id_)
     return print(band) if band else print(f'Band with ID "{id_}" not found')
 
-
 def create_band():
     name = input("Enter band name: ")
     Band.create(name) and print(f"{name} created") if not Band.find_by_name(name) else print(f"Band name {name} taken")
-
-    
 
 def delete_band():
     print("Which band would you like to delete?")
     list_bands()
 
     selection = input("Which band would you like to delete? \nEnter the members number: ")
-    
-    index = int(selection)
-    print(index)
-    bands = Band.get_all()
-    #check if selection falls in the range of existing indexes
-    if 1 <= index <= len(bands):
-       
-        selected_band = bands[index - 1]
-        
-        print(f"{selected_band.name} Deleted.")
-        selected_band.delete()
-    else:
-        print("invalid selection: please try again.")
 
-#########################################################
+    for member in Band.get_all()[int(selection) - 1].members():
+        member.delete()
+    Band.get_all()[int(selection) -1].delete() 
+
 def list_bands():
     print("\n################################")
     print("All Bands")
@@ -64,7 +48,7 @@ def list_band_members():
     [print(f"{i}. {member.name}") for i, member in enumerate(band.members(), start = 1)]
     print("*****************************************\n")
 
-    
+
 def create_member():
     name = input("Enter the member's name: ")
     instrument = input("Enter the member's instrument: ")
@@ -98,17 +82,11 @@ def delete_member():
 
     [print(f"{i}. {member.name}") for i, member in enumerate(band, start= 1)]
     
-    # i = 1
+
     print("\n********************************")
     print(f"{member.name}" for member in band)
     print("********************************")
-    pdb.set_trace()
-    # for member in band:
-        
-    #     print(f"{i}. {member.name}" )
-    #     i +=1
-    # print("********************************\n")
-          
+
     member_index = int(input("Which member would you like to delete? \nEnter the members number: "))
     soloist = band[member_index-1]
     print("\n--------------------------------------------------------------------------")
@@ -145,7 +123,8 @@ def find_member_by_instrument():
     gear = [member.instrument for member in Member.get_all()]
     gear_list = []
     [gear_list.append(instrument) for instrument in gear if instrument not in gear_list]
-    
+    ###try to get rid of the gear_list = []
+    ###try to use gear[selection - i]
  
     [print(f"{i}. {instrument}") for i, instrument in enumerate(gear_list, start = 1)]
 
