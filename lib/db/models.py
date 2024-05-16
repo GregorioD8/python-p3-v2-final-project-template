@@ -1,17 +1,42 @@
 from db.__init__ import CURSOR, CONN
+import pygame
+import importlib
 
 
 class Band:
 
     all = {}
 
-    def __init__(self, name, id=None):
+    def __init__(self, name, song=None, id=None):
         self.id = id
         self.name = name
+        self.song = song
 
     def __repr__(self):
-        return f"<Band {self.id} {self.name}>"
+        return f"<Band {self.id} {self.name} {self.song}>"
+    #song
+    ##################################
+    @property
+    def song(self):
+        return self._song
 
+    @song.setter
+    def song(self, song):
+        self._song = song
+
+    def play(self):
+        if self.song:
+            songs = importlib.import_module('sounds')
+            #getattr(object, name[, default]) -> value
+            song_path = getattr(songs, self.song, None)
+            if song_path is None:
+                raise ValueError(f"Song {self.song} not found in sounds module") 
+
+            pygame.mixer.Channel(0).play(pygame.mixer.Sound(song_path))
+
+        else:
+            print(f"No song associated with {self.name}")
+    ##################################
     @property
     def name(self):
         return self._name
@@ -31,7 +56,8 @@ class Band:
         sql = """
             CREATE TABLE IF NOT EXISTS bands (
             id INTEGER PRIMARY KEY, 
-            name TEXT)        
+            name TEXT, 
+            song TEXT)        
         """
         CURSOR.execute(sql)
         CONN.commit()
@@ -50,19 +76,19 @@ class Band:
         Update object id attribute using the primary key value of new row.
         Save the object in local dictionary using table row's PK as dictionary key"""
         sql = """
-            INSERT INTO bands (name)
-            VALUES (?)        
+            INSERT INTO bands (name, song)
+            VALUES (?, ?)        
         """
-        CURSOR.execute(sql, (self.name,))
+        CURSOR.execute(sql, (self.name, self.song))
         CONN.commit()
 
         self.id = CURSOR.lastrowid
         type(self).all[self.id] = self
 
     @classmethod
-    def create(cls, name):
+    def create(cls, name, song=None):
         """ Initialize a new Band instance and save the object to the database """
-        band = cls(name)
+        band = cls(name, song)
         band.save()
         return band
 
@@ -71,6 +97,7 @@ class Band:
         sql = """
             UPDATE bands
             SET name = ?
+            SET song = ?
             WHERE id = ?         
         """
         CURSOR.execute(sql, (self.name, self.id))
@@ -98,6 +125,7 @@ class Band:
         band = cls.all.get(row[0])
         if band:
             band.name = row[1]
+            band.song = row[2]
         else:
             band = cls(row[1])
             band.id = row[0]

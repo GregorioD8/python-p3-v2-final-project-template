@@ -1,7 +1,10 @@
 from db.__init__ import CONN, CURSOR
 from db.models import Member
 from db.models import Band
+from sounds import *
 
+def get_song(song_name):
+    return f"{song_name}"
 
 def seed_database():
     Member.drop_table()
@@ -11,11 +14,12 @@ def seed_database():
 
 
     # Create seed data
-    ccr = Band.create("Creedence Clearwater Revival")
-    led = Band.create("Led Zeppelin")
-    jimi = Band.create("Jimi Hendrix")
-    aerosmith = Band.create("Aerosmith")
-    blink = Band.create("Blink 182")
+    ccr = Band.create("Creedence Clearwater Revival", "fortunate_son")
+    led = Band.create("Led Zeppelin", "immigrant_song")
+    # led.song = immigrant_song
+    jimi = Band.create("Jimi Hendrix", "all_along_the_watchtower")
+    aerosmith = Band.create("Aerosmith", "dream_on")
+    blink = Band.create("Blink 182", "dammit")
 
     Member.create("John Fogerty", "Vocals/Guitar", ccr.id)
     Member.create("Tom Fogerty", "Guitar", ccr.id)
