@@ -1,6 +1,5 @@
 from db.__init__ import CONN, CURSOR
-from db.models import Member
-from db.models import Band
+from db.models import Band, Member, Song
 from sounds import *
 
 def get_song(song_name):
@@ -9,17 +8,17 @@ def get_song(song_name):
 def seed_database():
     Member.drop_table()
     Band.drop_table()
+    Song.drop_table()
     Band.create_table()
     Member.create_table()
-
+    Song.create_table()
 
     # Create seed data
-    ccr = Band.create("Creedence Clearwater Revival", "fortunate_son")
-    led = Band.create("Led Zeppelin", "immigrant_song")
-    # led.song = immigrant_song
-    jimi = Band.create("Jimi Hendrix", "all_along_the_watchtower")
-    aerosmith = Band.create("Aerosmith", "dream_on")
-    blink = Band.create("Blink 182", "dammit")
+    ccr = Band.create("Creedence Clearwater Revival")
+    led = Band.create("Led Zeppelin")
+    jimi = Band.create("Jimi Hendrix")
+    aerosmith = Band.create("Aerosmith")
+    blink = Band.create("Blink 182")
 
     Member.create("John Fogerty", "Vocals/Guitar", ccr.id)
     Member.create("Tom Fogerty", "Guitar", ccr.id)
@@ -46,5 +45,13 @@ def seed_database():
     Member.create("Tom Delong", "Vocals/Guitar", blink.id)
     Member.create("Travis Barker", "Drums", blink.id)
     
+    Song.create("fortunate_son", "../lib/music/ccr.mp3", ccr.id)
+    Song.create("immigrant_song", "../lib/music/led_zeppelin.mp3", led.id)
+    Song.create("all_along_the_watchtower", "../lib/music/jimi.mp3", jimi.id)
+    Song.create("dream_on", "../lib/music/aerosmith.mp3", aerosmith.id)
+    Song.create("blink", "../lib/music/blink.mp3", blink.id)
+
+
+
 seed_database()
 print("Seeded database")

@@ -3,9 +3,11 @@ from colorama import init, Fore, Style   #text color: print(Fore.GREEN + " " + S
 import pygame
 import os
 from pyfiglet import figlet_format
-from sounds import *
-
+from sounds import menu, click
+from helpers import *
+from db.models import Band, Member, Song
 music_playing = True
+just_deleted = False
 
 #Initializes colorama for text
 init(autoreset = True)
@@ -21,7 +23,6 @@ def clear_screen():
 #Toggles music play/pause
 def toggle_music():
     global music_playing
-
     if music_playing:
         pygame.mixer.Channel(0).pause()
         music_playing = False
@@ -41,31 +42,19 @@ def stop_song():
 def play_sound_effect(sound):
     pygame.mixer.Channel(1).play(pygame.mixer.Sound(sound))
 
-#Methods from helpers.py
-from helpers import (
-
-    list_bands,
-    select_band,
-    create_band, 
-    delete_band,
-    list_band_members,
-    create_member,
-    delete_member,
-    find_member_by_name,
-    exit_program,
-    find_band_by_instrument
-)
 #Main menu
 def main_menu():
     clear_screen()
     play_song(menu)
 
     while True:
+        print(Fore.LIGHTMAGENTA_EX + figlet_format("Flatiron \nRecords", font="block") + Style.RESET_ALL)
         print(Fore.GREEN + figlet_format("Main Menu", font="standard") + Style.RESET_ALL)
         print("0. Exit the program")
         print("1. Manage Bands")
         print("2. Find band by instrument")
         print("3. Find member by name")
+        print("4. Flatiron Records song library")
 
         choice = input(Fore.LIGHTYELLOW_EX + "> "+ Style.RESET_ALL)
         play_sound_effect(click)
@@ -80,6 +69,8 @@ def main_menu():
         elif choice == "3":
             clear_screen()
             find_member_by_name()
+        elif choice == "4":
+            list_song_library()
         else:
             main_menu()
 
@@ -87,13 +78,17 @@ def main_menu():
 def band_menu():
     stop_song()
     clear_screen()
-    
+    global just_deleted
+    if just_deleted:
+            list_bands()
+            just_deleted = False
+
     while True:
         print(Fore.GREEN + figlet_format("Band Menu", font="standard") + Style.RESET_ALL)
         print("0. Back to main menu")
         print("1. Select band to manage")
         print("2. Create band\n")
-                
+
         choice = input(Fore.LIGHTYELLOW_EX + "> "+ Style.RESET_ALL)
         play_sound_effect(click)
 
@@ -112,10 +107,12 @@ def band_menu():
 def member_menu(band):
     clear_screen()
     play_sound_effect(click)
-
+  
+    song = Song.find_by_id(band.id)[0]
     #Only play the bands song if it's not already playing
-    if band.song and not pygame.mixer.Channel(0).get_busy():
-        band.play()
+    if song and not pygame.mixer.Channel(0).get_busy():
+        song.play()
+        
 
     while True:
         print(Fore.GREEN + figlet_format(f"{band.name}", font="standard") + Style.RESET_ALL)
@@ -124,10 +121,12 @@ def member_menu(band):
         print("\nMember Menu:")
         print("0. Back to band menu")
         print(f"1. To toggle music on/off")
-        print(f"2. Add new member to {band.name}")
-        print(f"3. Delete member of {band.name}")
-        print(f"4. Delete the band {band.name}")
-  
+        print(f"2. Song menu for {band.name}")
+        print(f"3. Add new member to {band.name}")
+        print(f"4. Delete member of {band.name}")
+        print(f"5. Delete the band {band.name}")
+        
+
         choice = input(Fore.LIGHTYELLOW_EX + "> "+ Style.RESET_ALL)
         play_sound_effect(click)
         
@@ -138,21 +137,56 @@ def member_menu(band):
             toggle_music()
         elif choice == "2":
             clear_screen()
+            song_menu(band)
+        elif choice == "3":
+            clear_screen()
             create_member(band)
             clear_screen()
             member_menu(band)
-        elif choice == "3":
+        elif choice == "4":
             clear_screen()
             list_band_members(band)
             member = input(Fore.LIGHTYELLOW_EX + f"Delete which member of {band.name}? \nEnter the members number: >"+ Style.RESET_ALL)
             delete_member(band.members()[int(member) - 1])
             member_menu(band)
-        elif choice == "4":
+        elif choice == "5":
             toggle_music()
             delete_band(band)
+            global just_deleted
+            just_deleted = True
             band_menu()
         else:
-            member_menu(band)
+            member_menu()
             
+#Menu for managing bands
+def song_menu(band):
+    clear_screen()
+    
+    while True:
+        print(Fore.GREEN + figlet_format("Song Menu", font="standard") + Style.RESET_ALL)
+        print("0. Back to main menu")
+        print(f"1. See all songs by {band.name}")
+        print(f"2. Upload new song for {band.name}")
+        print("3. Play different song\n")
+
+        choice = input(Fore.LIGHTYELLOW_EX + "> "+ Style.RESET_ALL)
+        play_sound_effect(click)
+
+        if choice == "0":
+            main_menu()
+        elif choice == "1":
+            get_songs(band)
+        elif choice == "2":
+            song_name = input("Enter the name of the song: ").strip()
+            song_path = input("Copy and paste the full path of the song file here: ").strip()
+            upload_song(band, song_name, song_path)
+            band_menu()
+        elif choice == "3":
+            get_songs(band)
+            song_number = input("Select the song number: ").strip()
+            select_song(band, song_number)      
+        else:
+            print("Invalid choice")
+
 if __name__ == "__main__":
     main_menu()

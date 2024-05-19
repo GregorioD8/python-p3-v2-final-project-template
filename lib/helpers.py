@@ -1,7 +1,12 @@
-from db.models import Band, Member
+from db.models import Band, Member, Song
 from tabulate import tabulate #for nice tables
 from colorama import init, Fore, Style
 from pyfiglet import figlet_format
+import os
+import shutil
+import sys
+import time
+
 
 def exit_program():
     print("Exiting program")
@@ -12,7 +17,7 @@ def find_band_by_name():
     band = Band.find_by_name(name)
     return print(band) if band else print(f'Band "{name}" not found in the database.')
 
-#Creates a new band. Just by name. Song attribute None by default. Can be added with setter.  
+#Creates a new band.  
 def create_band():
     name = input("Enter band name: ")
     Band.create(name) and print(f"{name} created") if not Band.find_by_name(name) else print(f"Band name {name} taken")
@@ -22,7 +27,7 @@ def delete_band(band):
     [member.delete() for member in band.members()] #Deleting each member of the band
     band.delete() #Deleting the band itself
     print(Fore.LIGHTRED_EX +f"The band {band.name} and all of its members have been DELETED" + Style.RESET_ALL)
-
+    
 def list_band_members(band):
     #Using list comprehension to create a list of band members with their details
     table = [[i, member.name, member.instrument] for  i, member in enumerate(band.members(), start = 1)]
@@ -84,4 +89,36 @@ def find_band_by_instrument():
     
     print(Fore.GREEN + figlet_format(f"{instrument}", font="standard") + Style.RESET_ALL)
     print(tabulate(table, headers=['Band', 'Member'], tablefmt='fancy_grid'))
-    
+
+#Upload song for the band
+def upload_song(band, song_name, song_path):
+    #makes a copy of the song and puts it in the music folder
+    music_folder = '../lib/music'
+    os.makedirs(music_folder, exist_ok=True)
+    song_filename = f"{song_name}.mp3"
+    destination_path = os.path.join(music_folder, song_filename)
+    shutil.copy(song_path, destination_path)
+
+    Song.create(song_name, destination_path, band.id) 
+    print(f"Uploaded song: {song_name} by {band.name}!")
+
+#Gets all of the bands songs
+def get_songs(band):
+    songs = Song.get_all()
+    bands_songs = [song for song in songs if song._band_id == band.id]
+    table = [[i, song.name] for i, song in enumerate(bands_songs, start = 1)]
+    print(tabulate(table, headers=['#', 'Song'], tablefmt='fancy_grid'))
+    # print(bands_songs)
+    return bands_songs
+
+def select_song(band, song_number):
+    songs = get_songs(band)
+    songs[int(song_number) -1].play()
+
+def list_song_library():
+
+    songs = [song for song in Song.get_all() if song.band_id]
+    # breakpoint()
+    table = [[i, Band.find_by_id(song.band_id).name, song.name] for i, song in enumerate(songs, start=1)]
+    print(tabulate(table, headers=['Band', 'Song'], tablefmt='fancy_grid'))
+   ######working on
