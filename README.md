@@ -15,9 +15,9 @@ This is the directory structure:
 ├── Pipfile.lock
 ├── README.md
 └── lib
+    ├── music folder: to store mp3 files 
     ├── db
     │   ├── __init__.py
-    │   ├── alembic.ini
     │   └── models.py  
     ├── cli.py
     ├── helpers.py
@@ -33,9 +33,34 @@ This is the directory structure:
 
 ### `Running the CLI`
 
+This is the program structure:
+```console
+└── Main Menu
+    ├── Manage Bands
+    ├── Find band by instrument
+    ├── Find member by name
+    └── List all songs    
+        
+        └── Band Menu
+        ├── Back to main menu
+        ├── Select band to manage
+        └── Create band            
+            └── Member Menu (for the selected band)
+                ├── Back to band menu
+                ├── Song Menu
+                ├── Add new member to band
+                ├── Delete member of band
+                └── Delete band
+
+                    └── Song Menu
+                        ├── Back to band menu
+                        ├── View all songs by band
+                        ├── Upload new song for band
+                        └── Play different song
+```      
 These are the prompts 
 
-```console
+
 0. Exit the program
 1. List all bands playing at concert
 2. Create band
@@ -45,7 +70,7 @@ These are the prompts
 6. List all band members playing at the concert
 7. List all cities band is performing
 8. create performance
-```
+
 
 ## Prompt, Helper, and Class relation 
 

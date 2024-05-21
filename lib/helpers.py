@@ -1,11 +1,9 @@
-from db.models import Band, Member, Song
-from tabulate import tabulate #for nice tables
+from db.models import Band, Member, Song 
+from tabulate import tabulate #for nice tables eg. print(tabulate(xyz_table, headers=["x_column","y_column", "z_column"], tablefmt="fancy_grid"))
 from colorama import init, Fore, Style
 from pyfiglet import figlet_format
-import os
-import shutil
-import sys
-import time
+import os #https://docs.python.org/3/library/os.html
+import shutil #https://docs.python.org/3/library/shutil.html#module-shutil
 
 
 def exit_program():
@@ -21,6 +19,7 @@ def find_band_by_name():
 def create_band():
     name = input("Enter band name: ")
     Band.create(name) and print(f"{name} created") if not Band.find_by_name(name) else print(f"Band name {name} taken")
+    print(Band.get_all())
 
 #Deletes band and all of its members
 def delete_band(band):
@@ -92,15 +91,14 @@ def find_band_by_instrument():
 
 #Upload song for the band
 def upload_song(band, song_name, song_path):
-    #makes a copy of the song and puts it in the music folder
+    #makes a copy of the song and places it in the music folder using pythons shutil module
     music_folder = '../lib/music'
     os.makedirs(music_folder, exist_ok=True)
     song_filename = f"{song_name}.mp3"
     destination_path = os.path.join(music_folder, song_filename)
-    shutil.copy(song_path, destination_path)
-
+    shutil.copy(song_path, destination_path) 
     Song.create(song_name, destination_path, band.id) 
-    print(f"Uploaded song: {song_name} by {band.name}!")
+    
 
 #Gets all of the bands songs
 def get_songs(band):
@@ -111,14 +109,15 @@ def get_songs(band):
     # print(bands_songs)
     return bands_songs
 
+#Plays the selected song
 def select_song(band, song_number):
     songs = get_songs(band)
     songs[int(song_number) -1].play()
 
 def list_song_library():
-
+    #Getting all songs and the associated band
     songs = [song for song in Song.get_all() if song.band_id]
-    # breakpoint()
     table = [[i, Band.find_by_id(song.band_id).name, song.name] for i, song in enumerate(songs, start=1)]
     print(tabulate(table, headers=['Band', 'Song'], tablefmt='fancy_grid'))
-   ######working on
+
+    

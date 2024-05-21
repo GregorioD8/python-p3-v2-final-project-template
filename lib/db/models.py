@@ -1,17 +1,18 @@
 from db.__init__ import CURSOR, CONN #import the __init__ to use the db
 import pygame
-import importlib
+
 
 
 class Band:
     #dict because I have a database which is the tour.db
+    #efficiency thing of the ORM
+    #allows you to instantly look up an item in the database
     all = {}
 
     def __init__(self, name, id=None):
         self.id = id
         self.name = name
         
-
     def __repr__(self):
         return f"<Band {self.id} {self.name} >"
 
@@ -61,7 +62,6 @@ class Band:
 
         self.id = CURSOR.lastrowid
         type(self).all[self.id] = self
-    ###################################w/o
 
     @classmethod
     def create(cls, name):
@@ -69,7 +69,6 @@ class Band:
         band = cls(name)
         band.save()
         return band
-
 
     def update(self):
         """ Update the table row corresponding to the current Band instance """
@@ -271,7 +270,7 @@ class Member:
             DELETE FROM members
             WHERE id = ?       
         """
-
+    
         CURSOR.execute(sql, (self.id,))
         CONN.commit()
 

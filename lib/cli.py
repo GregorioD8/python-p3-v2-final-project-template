@@ -22,6 +22,7 @@ def clear_screen():
 
 #Toggles music play/pause
 def toggle_music():
+    print("press m to toggle music on/off")
     global music_playing
     if music_playing:
         pygame.mixer.Channel(0).pause()
@@ -95,8 +96,10 @@ def band_menu():
         if choice == "0":
             main_menu()
         elif choice == "1":
+            clear_screen()
             band = select_band()
-            member_menu(band)
+            if band:
+                member_menu(band)
         elif choice == "2":
             create_band()
             list_bands()
@@ -107,12 +110,19 @@ def band_menu():
 def member_menu(band):
     clear_screen()
     play_sound_effect(click)
-  
-    song = Song.find_by_id(band.id)[0]
-    #Only play the bands song if it's not already playing
-    if song and not pygame.mixer.Channel(0).get_busy():
-        song.play()
+    print("press m to toggle music on/off")
+    songs = Song.find_by_id(band.id)
+    if songs:
         
+        #the first listed song from the band
+        song = songs[0]
+
+        #Only play this song if it's not already playing
+        if song and not pygame.mixer.Channel(0).get_busy():
+            song.play()
+        print(f"playing {song.name} by {band.name}")
+    else: 
+        print(f"No songs found for {band.name}.")
 
     while True:
         print(Fore.GREEN + figlet_format(f"{band.name}", font="standard") + Style.RESET_ALL)
@@ -120,12 +130,10 @@ def member_menu(band):
 
         print("\nMember Menu:")
         print("0. Back to band menu")
-        print(f"1. To toggle music on/off")
-        print(f"2. Song menu for {band.name}")
-        print(f"3. Add new member to {band.name}")
-        print(f"4. Delete member of {band.name}")
-        print(f"5. Delete the band {band.name}")
-        
+        print(f"1. Song menu for {band.name}")
+        print(f"2. Add new member to {band.name}")
+        print(f"3. Delete member of {band.name}")
+        print(f"4. Delete the band {band.name}")
 
         choice = input(Fore.LIGHTYELLOW_EX + "> "+ Style.RESET_ALL)
         play_sound_effect(click)
@@ -134,34 +142,34 @@ def member_menu(band):
             band_menu()
         elif choice == "1":
             clear_screen()
-            toggle_music()
-        elif choice == "2":
-            clear_screen()
             song_menu(band)
-        elif choice == "3":
+        elif choice == "2":
             clear_screen()
             create_member(band)
             clear_screen()
             member_menu(band)
-        elif choice == "4":
+        elif choice == "3":
             clear_screen()
             list_band_members(band)
             member = input(Fore.LIGHTYELLOW_EX + f"Delete which member of {band.name}? \nEnter the members number: >"+ Style.RESET_ALL)
             delete_member(band.members()[int(member) - 1])
             member_menu(band)
-        elif choice == "5":
+        elif choice == "4":
             toggle_music()
             delete_band(band)
             global just_deleted
             just_deleted = True
             band_menu()
+        elif choice == "m":
+            clear_screen()
+            toggle_music()
         else:
             member_menu()
             
 #Menu for managing bands
 def song_menu(band):
     clear_screen()
-    
+    print("press m to toggle music on/off")
     while True:
         print(Fore.GREEN + figlet_format("Song Menu", font="standard") + Style.RESET_ALL)
         print("0. Back to main menu")
@@ -175,16 +183,22 @@ def song_menu(band):
         if choice == "0":
             main_menu()
         elif choice == "1":
+            clear_screen()
             get_songs(band)
         elif choice == "2":
             song_name = input("Enter the name of the song: ").strip()
             song_path = input("Copy and paste the full path of the song file here: ").strip()
             upload_song(band, song_name, song_path)
-            band_menu()
+            clear_screen()    
+            print(f"Uploaded song: {song_name} by {band.name}!")
         elif choice == "3":
             get_songs(band)
             song_number = input("Select the song number: ").strip()
-            select_song(band, song_number)      
+            select_song(band, song_number)    
+            clear_screen()  
+        elif choice == "m":
+            clear_screen()
+            toggle_music()
         else:
             print("Invalid choice")
 
