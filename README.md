@@ -5,8 +5,6 @@
 - How to create the basic directory structure of a CLI.
 - How to build a CLI.
 
----
-
 This is the directory structure:
 
 ```console
@@ -58,62 +56,68 @@ This is the program structure:
                         ├── Upload new song for band
                         └── Play different song
 ```      
-These are the prompts 
-
-
-0. Exit the program
-1. List all bands playing at concert
-2. Create band
-3. Find band by name
-4. Find number of band members for band
-5. List all band members in a band
-6. List all band members playing at the concert
-7. List all cities band is performing
-8. create performance
-
 
 ## Prompt, Helper, and Class relation 
 
 These are the helpers
 
 ```
-from helpers import (
-
-#see instructions 
     exit_program,
     list_bands,
     create_band, 
     find_band_by_name,
-    number_of_members,
     list_band_members,
     list_all_artists,
-    list_performances,
     create_performance,
-
-
-)
+    list_song_library,
+    get_songs, 
+    select_song,
+    upload_song
 ```
 
-The prompt `1. List all bands playing at concert`
-uses the helper function `exit_program`. This prints out all of the bands that exist in the "all" dict in the Band class created from the seeded data. 
+Some of the following methods that print tables. Those tables are presented in tabulated format using pythons `tabulate` library. 
 
-The prompt `2. Create band`
-uses the helper function `create_band`. This helper takes two inputs: the name and the time. I use the time to check if any other bands are playing at that time. If there are no other bands playing at this time then it successfully creates the band. If not an error is printed to the cli stating that the time slot is taken by the specified band.  
+`exit_program` Exits the program. It prints a message that the user is exiting the program and then exits using the `exit()` function.
 
-The prompt `3. Find band by name`
-uses the helper function `find_band_by_name`. this takes the input of the band name. The name is then sent to the Band class and checks if it is contained in the "all" dict. if it is not then the cli prints out that the band was not found. 
+`list_bands`
+This prints out all of the bands that exist in the database. 
 
-The prompt `4. Find number of band members for band`
-uses the helper function `number_of_members`. This takes in the input of the bands id. The id is used to find the band in Band class. if the band exists in the Band class i use `len(band.members())` to get the number of members. if it doesnt exist. i print out `cannot find band.`
+`create_band`
+Creates an band instance of the band class. The user provides input for the name of the new band.  
 
-The prompt `5. List all band members in a band`
-uses the helper function `list_band_member`. This takes in the input of the bands id. The id is used to find the band in Band class. if the band exists in the Band class i use a for loop to print out each members name.
+`delete_band` 
+Deletes a specified band and all of its members.
 
-The prompt `6. List all band members playing at the concert`
-uses the helper function `list_all_artists`. This prints all members that exist in the Member class using a for loop with `Member.get_all()`.
+`find_band_by_name`
+Prompts the user to enter a bands name and searches for the band in the database. If the band is found, it prints the band's details; otherwise it notifies the user that the name is taken. It also lists all bands after crating a new one.
 
-The prompt `7. List all cities band is performing`
-uses the helper function `list_performances`. This takes the input of the band id from the user. it prints out each city the band is performing in. it uses the Band class to find the band and a for loop to print out each city the band plays in. 
+`list_band_members`
+Lists all members of a band. It retrievs the bands members and displays their details. 
 
-The prompt `8. create performance`
-uses the helper function `create_performance`. This takes in the input of city and id. If the id is not taken already the band is created using the create function from the Band class. 
+`create_member`
+Creates a new member by the provided input of name and instrument.
+
+`delete_member`
+Deletes a specified member from the database.
+
+`find_member_by_name`
+Prompts the user to enter part of a members name.
+
+`select_band`
+Lists all bands and prompts the user to select a band by number. It returns the selected band instance.
+
+`list_instruments`
+Lists all unique instruments played by band members in the database. The user selects one of the instruments and the method prints a table displaying all of the bands that have that instrument played in their band.
+
+`upload_song`
+Prompts the user to enter a song name and the path to the song file. It copies the song file to the designated music folder and creates a new song record in the database.
+
+`get_songs` 
+Retrieves all songs of a specified band.
+
+`select_song`
+Prompts the user to select a song from a specified band and plays the selected bands song.
+
+`list_song_library`
+Lists all songs in the database along with their associated band.
+
