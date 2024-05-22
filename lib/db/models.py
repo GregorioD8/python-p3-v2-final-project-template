@@ -2,16 +2,15 @@ from db.__init__ import CURSOR, CONN #import the __init__ to use the db
 import pygame
 
 
-
 class Band:
-    #dict because I have a database which is the tour.db
+    #dict because I have a database which is the label.db
     #efficiency thing of the ORM
     #allows you to instantly look up an item in the database
     all = {}
 
     def __init__(self, name, id=None):
-        self.id = id
-        self.name = name
+        self.id = id #unique identifier for the band
+        self.name = name 
         
     def __repr__(self):
         return f"<Band {self.id} {self.name} >"
@@ -57,10 +56,13 @@ class Band:
             INSERT INTO bands (name)
             VALUES (?)        
         """
+        #Execute the SQL command to insert a new band
         CURSOR.execute(sql, (self.name,))
+        #Commit the changes to the database
         CONN.commit()
-
+        #update the bands ID with the primary key of the newly inserted row
         self.id = CURSOR.lastrowid
+        #Store the band instance in the dictionary
         type(self).all[self.id] = self
 
     @classmethod
@@ -90,9 +92,9 @@ class Band:
         """
         CURSOR.execute(sql, (self.id,))
         CONN.commit()
-
+        #Delete teh band instance from the dict
         del type(self).all[self.id]
-
+        #Reset the bands ID
         self.id = None
 
     @classmethod

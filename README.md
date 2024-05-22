@@ -4,18 +4,26 @@
 
 - How to create the basic directory structure of a CLI.
 - How to build a CLI.
+- How to set set up ORM for SQL using Python 
+    1. Choose an ORM library: `sqlite3`
+    2. Install the ORM library: `pip install sqlite3`
+    3. Configure the database connection: `__init__.py --> CONN = sqlite3.connect('label.db')`
+    4. Define models/tables/CRUD operations: `Created python classes`
+    
+# By using an ORM you can interact with your database using Python objects and methods, making your code more readable and easier to maintain for object oriented programming.`  
 
 This is the directory structure:
 
 ```console
-.
+
 ├── Pipfile
 ├── Pipfile.lock
 ├── README.md
 └── lib
-    ├── music folder: to store mp3 files 
+    ├── music: folder to store mp3 song files for playback in the program
     ├── db
     │   ├── __init__.py
+    ├── ├── alembic.ini
     │   └── models.py  
     ├── cli.py
     ├── helpers.py
