@@ -10,11 +10,6 @@ def exit_program():
     print("Exiting program")
     exit()
 
-def find_band_by_name():
-    name = input("Enter the band's name: ")
-    band = Band.find_by_name(name)
-    return print(band) if band else print(f'Band "{name}" not found in the database.')
-
 #Creates a new band.  
 def create_band():
     name = input("Enter band name: ")
