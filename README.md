@@ -4,7 +4,7 @@
 
 - How to create the basic directory structure of a CLI.
 - How to build a CLI.
-- How to set set up ORM for SQL using Python 
+- Database interaction in Python using SQAlchemy as the ORM
     1. Choose an ORM library: `sqlite3`
     2. Install the ORM library: `pip install sqlite3`
     3. Configure the database connection: `__init__.py --> CONN = sqlite3.connect('label.db')`
@@ -28,7 +28,7 @@ This is the directory structure:
     ├── cli.py
     ├── helpers.py
     ├── seed.py
-    └── tour.db
+    └── label.db #sqlite database
 ```
 
 ### `setup`
