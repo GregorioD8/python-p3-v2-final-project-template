@@ -92,6 +92,7 @@ def upload_song(band, song_name, song_path):
     song_filename = f"{song_name}.mp3"
     destination_path = os.path.join(music_folder, song_filename)
     shutil.copy(song_path, destination_path) 
+   
     Song.create(song_name, destination_path, band.id) 
     
 
@@ -107,7 +108,7 @@ def get_songs(band):
 #Plays the selected song
 def select_song(band, song_number):
     songs = get_songs(band)
-    songs[int(song_number) -1].play()
+    songs[int(song_number) - 1].play()
 
 def list_song_library():
     #Getting all songs and the associated band

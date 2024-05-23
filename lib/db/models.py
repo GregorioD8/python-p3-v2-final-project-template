@@ -2,6 +2,7 @@ from db.__init__ import CURSOR, CONN #import the __init__ to use the db
 import pygame
 
 
+
 class Band:
     #dict because I have a database which is the label.db
     #efficiency thing of the ORM
@@ -60,7 +61,7 @@ class Band:
         CURSOR.execute(sql, (self.name,))
         #Commit the changes to the database
         CONN.commit()
-        #update the bands ID with the primary key of the newly inserted row
+        #update the bands ID with the primary keyu of teh newly inserted row
         self.id = CURSOR.lastrowid
         #Store the band instance in the dictionary
         type(self).all[self.id] = self
@@ -94,7 +95,7 @@ class Band:
         CONN.commit()
         #Delete teh band instance from the dict
         del type(self).all[self.id]
-        #Reset the bands ID
+        #Reset the bands
         self.id = None
 
     @classmethod
@@ -368,7 +369,7 @@ class Song:
         self.id = id
         self.name = name
         self.path = path
-        self._band_id = band_id
+        self.band_id = band_id
 
     def __repr__(self):
         return f"<Song {self.id} {self.name} {self.path} Band ID: {self.band_id}>" 
@@ -431,6 +432,11 @@ class Song:
     def instance_from_db(cls, row):
         """ Return a Song object haviong the attribute values from the table row. """
         # See if instance exists in the dict using primary key
+        print(f'processing row: {row}')  # de
+        band = Band.find_by_id(int(row[3]))
+        if not band:
+            raise ValueError("band_id must reference a band yo???")
+        
         song = cls.all.get(row[0])
         if song:
             # Check if values match in case modification was made    
@@ -474,9 +480,9 @@ class Song:
     
     @band_id.setter
     def band_id(self, band_id):
-        if type(band_id) is int and Band.find_by_id(band_id):
+        if isinstance(band_id, int) and Band.find_by_id(band_id):
             self._band_id = band_id
         else:
             raise ValueError(
-                "band_id must reference a band in the database."
+                "band_id must reference a band in the database. ugh!!!!!!!!!!!"
             )
