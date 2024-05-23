@@ -431,12 +431,10 @@ class Song:
     @classmethod
     def instance_from_db(cls, row):
         """ Return a Song object haviong the attribute values from the table row. """
-        # See if instance exists in the dict using primary key
-        print(f'processing row: {row}')  # de
+        # See if instance exists in the dict using primary key       
         band = Band.find_by_id(int(row[3]))
         if not band:
-            raise ValueError("band_id must reference a band yo???")
-        
+            raise ValueError("band_id must reference a band")        
         song = cls.all.get(row[0])
         if song:
             # Check if values match in case modification was made    
@@ -484,5 +482,5 @@ class Song:
             self._band_id = band_id
         else:
             raise ValueError(
-                "band_id must reference a band in the database. ugh!!!!!!!!!!!"
+                "band_id must reference a band in the database."
             )
