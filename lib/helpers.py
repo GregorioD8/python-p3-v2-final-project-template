@@ -98,11 +98,10 @@ def upload_song(band, song_name, song_path):
 
 #Gets all of the bands songs
 def get_songs(band):
-    songs = Song.get_all()
-    bands_songs = [song for song in songs if song._band_id == band.id]
-    table = [[i, song.name] for i, song in enumerate(bands_songs, start = 1)]
+    bands_songs = [song for song in Song.find_by_id(band.id)]
+    table = [[i, song.name.replace("_", " ").title()] for i, song in enumerate(bands_songs, start = 1)]
     print(tabulate(table, headers=['#', 'Song'], tablefmt='fancy_grid'))
-    # print(bands_songs)
+
     return bands_songs
 
 #Plays the selected song
@@ -116,4 +115,18 @@ def list_song_library():
     table = [[i, Band.find_by_id(song.band_id).name, song.name] for i, song in enumerate(songs, start=1)]
     print(tabulate(table, headers=['Band', 'Song'], tablefmt='fancy_grid'))
 
+#######################################################################
+#practice 
+#######################################################################
+def change_member_attribute(member):
+    new_name = input(Fore.LIGHTYELLOW_EX +f"Enter a new name for {member.name}. \n(leave blank to keep the same name): >"+ Style.RESET_ALL)
+    new_instrument = input(Fore.LIGHTYELLOW_EX +f"Enter a new instrument for the {member.name}. (leave blank and press enter to keep instrument: >"+ Style.RESET_ALL)
+
+    if new_name:
+        member.name = new_name
+    if new_instrument:
+        member.instrument = new_instrument
     
+    member.update()
+    print(f"Member updated to: name: {member.name} instrument: {member.instrument}")
+##########################################################################

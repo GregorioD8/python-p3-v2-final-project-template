@@ -112,11 +112,9 @@ def member_menu(band):
     play_sound_effect(click)
     print("press m to toggle music on/off")
     songs = Song.find_by_id(band.id)
-    if songs:
-        
+    if songs:    
         #the first listed song from the band
         song = songs[0]
-
         #Only play this song if it's not already playing
         if song and not pygame.mixer.Channel(0).get_busy():
             song.play()
@@ -134,7 +132,9 @@ def member_menu(band):
         print(f"2. Add new member to {band.name}")
         print(f"3. Delete member of {band.name}")
         print(f"4. Delete the band {band.name}")
-
+        ##############################################
+        print(f"5. Change an attribute of a member")
+        ##############################################
         choice = input(Fore.LIGHTYELLOW_EX + "> "+ Style.RESET_ALL)
         play_sound_effect(click)
         
@@ -160,6 +160,14 @@ def member_menu(band):
             global just_deleted
             just_deleted = True
             band_menu()
+            ##############################################
+        elif choice == "5":
+            clear_screen()
+            list_band_members(band)
+            member_index = input(Fore.LIGHTYELLOW_EX + f"Select band memeber by number: > "+ Style.RESET_ALL)
+            change_member_attribute(band.members()[int(member_index) -1])
+            member_menu(band)
+            ##############################################
         elif choice == "m":
             clear_screen()
             toggle_music()
