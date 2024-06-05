@@ -101,7 +101,6 @@ def get_songs(band):
     bands_songs = [song for song in Song.find_by_id(band.id)]
     table = [[i, song.name.replace("_", " ").title()] for i, song in enumerate(bands_songs, start = 1)]
     print(tabulate(table, headers=['#', 'Song'], tablefmt='fancy_grid'))
-
     return bands_songs
 
 #Plays the selected song
@@ -121,7 +120,8 @@ def list_song_library():
 def change_member_attribute(member):
     new_name = input(Fore.LIGHTYELLOW_EX +f"Enter a new name for {member.name}. \n(leave blank to keep the same name): >"+ Style.RESET_ALL)
     new_instrument = input(Fore.LIGHTYELLOW_EX +f"Enter a new instrument for the {member.name}. (leave blank and press enter to keep instrument: >"+ Style.RESET_ALL)
-
+    #empty sequences are falsy in python 
+    #if new_name or new_instrument is an empty string = "" it is falsy
     if new_name:
         member.name = new_name
     if new_instrument:
